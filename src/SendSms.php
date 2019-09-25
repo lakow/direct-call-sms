@@ -34,12 +34,11 @@ class SendSms
                 'tipo'=> $type,
                 'origem' => $directCall->getOption('origin'),
                 'access_token'=> $token,
-                'destino'=> $destiny,
+                'destino'=> SendSms::formatDestiny($destiny),
                 'texto'=> $message
             ),
             'timeout' => '10'
         );
-
 
         $response = wp_remote_post(self::URI_API , $args);
 
@@ -48,5 +47,18 @@ class SendSms
         }
 
         return json_decode($response['body'], TRUE);
+    }
+
+    /**
+     * @param string|array $destiny
+     * 
+     * @return string
+     */
+    private static function formatDestiny($destiny) 
+    {
+        if (is_array($destiny)) {
+            $destiny = implode(';', $destiny);
+        }
+        return str_replace(array('-', '.', ' ', '(',')'), '' , $destiny);
     }
 }
